@@ -1,0 +1,88 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
+import java.util.Set;
+
+public class Links
+{
+	HashMap<String, Set<String>> dictionary = new HashMap<String, Set<String>>();
+	private HashSet<String> list = new HashSet<String>();
+
+	public Links(String fileName)
+	{
+		populateList(fileName);
+	}
+
+	public void populateList(String fileName)
+	{
+		File file = new File(fileName);
+		try
+		{
+			Scanner scan = new Scanner(file);
+			while (scan.hasNextLine())
+			{
+				String word = scan.nextLine().toLowerCase();
+				list.add(word);
+			}
+			Object[] listArray = list.toArray();
+			for(int i = 0; i < listArray.length; i++)
+			{
+				dictionary.put(listArray[i].toString(), addCandidates(listArray[i].toString()));
+			}
+			scan.close();
+		}
+		catch (FileNotFoundException e)
+		{
+			// no file
+			e.printStackTrace();
+		}
+	}
+
+	public Set<String> addCandidates(String word)
+	{
+		Set<String> candidateSet = new HashSet<String>();
+		
+		for (int i = 0; i < word.length(); i++)
+		{
+			for (char j = 'a'; j <= 'z'; j++)
+			{
+				String temp = word;
+				temp = tempReplace(temp, i, j);
+				if (list.contains(temp) && !temp.equals(word))
+				{
+					candidateSet.add(temp);
+				}
+			}
+		}
+		if(candidateSet.isEmpty()){
+			return null;
+		}else{
+		return candidateSet;
+		}
+	}
+
+	private String tempReplace(String temp, int i, char letter)
+	{
+		String newString = "";
+		int size = temp.length();
+		newString += temp.substring(0, i);
+		newString += letter;
+		newString += temp.substring(i + 1, size);
+		return newString;
+	}
+
+	public Set<String> getCandidates(String string)
+	{
+		return dictionary.get(string);
+	}
+	
+	public Set<String> getDictionaryList()
+	{
+		return this.list;
+	}
+}

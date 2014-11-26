@@ -1,0 +1,102 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
+import java.util.Set;
+
+
+public class Links
+{
+	HashMap<String, Set<String>> dictionary = new HashMap<String, Set<String>>();
+	HashSet<String> list = new HashSet<String>();
+	String alphabet = "abcdefghijklmnopqrstuvwxyz";
+	int alphabetSize = alphabet.length();
+	
+	public Links(String fileName)
+	{
+		populateList(fileName);
+	}
+	
+	public void populateList(String fileName)
+	{
+		File file = new File(fileName);
+		try
+		{
+			Scanner scan = new Scanner(file);
+			while(scan.hasNextLine())
+			{
+				String word = scan.nextLine().toLowerCase();
+				list.add(word);
+				//dictionary.put(word, addCandidates(word));
+			}
+		}
+		catch (FileNotFoundException e)
+		{
+			// no file
+			e.printStackTrace();
+		}
+	}
+	
+//	public Set<String> addCandidates(String word)
+//	{
+//		Set<String> candidateSet = new HashSet<String>();
+//		int wordSize = word.length();
+//		int i = 0;
+//		while(i < wordSize)
+//		{
+//			for(int j = 0; j< alphabetSize; j++){
+//				String temp = word;
+//				char letter = alphabet.charAt(j);
+//				tempReplace(temp,i,letter);
+//			}
+//		}
+//		return candidateSet;
+//	}
+//	
+	
+
+	private String tempReplace(String temp, int i, char letter)
+	{
+		String newString = "";
+		int size = temp.length();
+		newString += temp.substring(0, i);
+		newString += letter;
+		newString += temp.substring(i+1, size);
+		return newString;
+	}
+
+	public Set<String> getCandidates(String string)
+	{
+		Set<String> candidateSet = new HashSet<String>();
+		if(!list.contains(string))
+		{
+			System.out.println("The string is not in the dictionary.");
+			//throw new NoSuchElementException();
+			return null;
+		}
+		else
+		{
+			for(int i = 0; i < string.length(); i++)
+			{
+				for(char j = 'a'; j <= 'z'; j++){
+					String temp = string;
+					char letter = j;
+					temp = tempReplace(temp,i,letter);
+					if(list.contains(temp) && !string.equals(temp))
+					{
+						candidateSet.add(temp);
+					}
+				}
+			}
+		}
+		if(candidateSet.size() == 0)
+		{
+			System.out.println("There are nu candidates.");
+			return null;
+		}
+		return candidateSet;
+	}
+}
